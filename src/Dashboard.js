@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import SalesChart from "./SalesChart";
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -245,7 +246,21 @@ const Dashboard = () => {
 
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <div className="bg-white rounded-xl shadow-lg p-6 h-80 flex items-center justify-center border border-gray-200">
-                Sales Chart Placeholder
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center h-full">
+                      Analyzing Trends...
+                    </div>
+                  }
+                >
+                  {recentSales.length > 0 ? (
+                    <SalesChart data={recentSales} />
+                  ) : (
+                    <div className="text-gray-400">
+                      No Data Available For Chart
+                    </div>
+                  )}
+                </Suspense>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6 h-80 flex items-center justify-center border border-gray-200">
