@@ -73,6 +73,7 @@ make a HTTP POST request to http://172.93.51.119:9090/api/v1/income
 }
 
 **The HTTP response will be**
+
 {
   "id": 10,
   "createdAt": "2025-12-05T09:02:44.5185",
@@ -104,6 +105,35 @@ Make a HTTP POST request to http://172.93.51.119:9090/api/v1/customers
   "customerType": "INDIVIDUAL",
   "phoneNumber": "08120465769"
 }
+
+## To Post an Expenditure
+
+Send a HTTP POST request to http://172.93.51.119:9090/api/v1/expenditures
+
+{
+  "amount": 12,
+  "supplierId": 1,
+  "employeeId": 1,
+  "category": "UTILITIES",
+  "quantity": 23,
+  "unitPrice": 4,
+  "description": "UTILITIES"
+}
+
+**The HTTP response will be**
+
+{
+  "id": 4,
+  "quantity": 23,
+  "unitPrice": 4,
+  "amount": 92,
+  "description": "UTILITIES",
+  "createdAt": "2025-12-05T09:16:29.050966",
+  "supplierName": "Manasseh Elias Anche",
+  "category": "UTILITIES"
+}
+
+
 
       ## Key Features
       * **Income Management:** Record and paginate sales records (e.g., sales per kg).
