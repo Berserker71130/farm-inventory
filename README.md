@@ -60,7 +60,7 @@ Response body
 
 	  #####The accessToken from the HTTP post response in the payload will be used to access transactions such as sales, expense, add customer and search customer in the app
 
-## To POST a customer
+## To POST an income
 
 make a HTTP POST request to http://172.93.51.119:9090/api/v1/income
 
@@ -82,6 +82,27 @@ make a HTTP POST request to http://172.93.51.119:9090/api/v1/income
   "grade": "2",
   "category": "SALES",
   "amount": 782
+}
+
+## To Post A Customer
+
+Make a HTTP POST request to http://172.93.51.119:9090/api/v1/customers
+
+{
+  "name": "Hannah G Anthony",
+  "email": "hanny@gmail.com",
+  "customerType": "INDIVIDUAL",
+  "phoneNumber": "08120465769"
+}
+
+**The HTTP response will be**
+
+{
+  "id": 17,
+  "name": "Hannah G Anthony",
+  "email": "hanny@gmail.com",
+  "customerType": "INDIVIDUAL",
+  "phoneNumber": "08120465769"
 }
 
       ## Key Features
