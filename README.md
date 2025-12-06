@@ -43,7 +43,7 @@ Follow these steps to get a local copy of the project up and running:
         ```{
   "username": "angelgee",
   "password": "1234567890"
-}
+}```
 
 **The HTTP POST Response will be**
 	
