@@ -40,9 +40,10 @@ Follow these steps to get a local copy of the project up and running:
         
           Make a HTTP POST Request to http://172.93.51.119:9090/api/v1/auth/login
          
-    
-  ```"username": "angelgee",
-  "password": "1234567890"```
+   ```json {
+  "username": "angelgee",
+  "password": "1234567890"
+} ```
 
 **The HTTP POST Response will be**
 	
