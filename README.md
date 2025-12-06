@@ -64,7 +64,7 @@ Response body
 
 make a HTTP POST request to http://172.93.51.119:9090/api/v1/income
 
-```{
+{
   "customerId": 10,
   "noOfKg": 23,
   "grade": "2",
@@ -131,7 +131,7 @@ Send a HTTP POST request to http://172.93.51.119:9090/api/v1/expenditures
   "createdAt": "2025-12-05T09:16:29.050966",
   "supplierName": "Manasseh Elias Anche",
   "category": "UTILITIES"
-}```
+}
 
 ## Key Features
 
