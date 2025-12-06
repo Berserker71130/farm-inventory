@@ -133,11 +133,9 @@ Send a HTTP POST request to http://172.93.51.119:9090/api/v1/expenditures
   "category": "UTILITIES"
 }
 
+## Key Features
 
-
-      **Key Features**
-
-      * **Income Management:** Record and paginate sales records (e.g., sales per kg).
+      * **Income Management** Record and paginate sales records (e.g., sales per kg).
       * **Expense tracking:** Log operational costs.
       * **Customer CRM:** Search and manage customer contact details.
       * **Modern UI:** Responsive, clean interface utilizing the Tailwind pagination design.
