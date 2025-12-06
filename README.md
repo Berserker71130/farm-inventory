@@ -16,7 +16,7 @@ Follow these steps to get a local copy of the project up and running:
 ### Prerequisites
 1. Node.js (LTS version recommended)
 2. npm (or yarn)
-3. Swagger API for making calls, POSTS, GET, PATCH and DELETE
+3. API: Swagger API for making calls, POSTS, GET, PATCH and DELETE
 
    ### Installation
    1. Clone the repository
@@ -135,7 +135,8 @@ Send a HTTP POST request to http://172.93.51.119:9090/api/v1/expenditures
 
 
 
-      ## Key Features
+      **Key Features**
+
       * **Income Management:** Record and paginate sales records (e.g., sales per kg).
       * **Expense tracking:** Log operational costs.
       * **Customer CRM:** Search and manage customer contact details.
