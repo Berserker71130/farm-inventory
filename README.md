@@ -64,7 +64,7 @@ Response body
 
 make a HTTP POST request to http://172.93.51.119:9090/api/v1/income
 
-{
+```{
   "customerId": 10,
   "noOfKg": 23,
   "grade": "2",
