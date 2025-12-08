@@ -20,7 +20,7 @@ Follow these steps to get a local copy of the project up and running:
 
    ### Installation
    1. Clone the repository
-      git clone https://github.com/Berserker71130/mantisPro.git
+      git clone https://github.com/Berserker71130/farm-inventory.git
 
    2. Navigate to the project directory:
          cd mypro
