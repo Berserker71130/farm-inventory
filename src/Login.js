@@ -15,6 +15,8 @@ function Login() {
     backgroundPosition: "center",
   };
 
+  console.log("THIS IS THE NEW BUILD");
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -39,7 +41,7 @@ function Login() {
           navigate("/");
         } else {
           toast.error(
-            "Login successful, but no token receieved. Please contact support."
+            "Login successful, but no token receieved. Please contact support.",
           );
         }
       } else {
@@ -60,7 +62,7 @@ function Login() {
     } catch (networkError) {
       console.log("Network error during login:", networkError);
       toast.error(
-        "Network error: Could not connect to the server. Please check your connection."
+        "Network error: Could not connect to the server. Please check your connection.",
       );
     }
   };
