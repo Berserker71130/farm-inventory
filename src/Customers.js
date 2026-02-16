@@ -29,15 +29,18 @@ const Customers = () => {
             Authorization: `Bearer ${token}`,
           },
           cache: "no-store",
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status:${response.status}`);
       }
 
+      // const data = await response.json();
+      // console.log("API Response:", data);
       const data = await response.json();
-      console.log("API Response:", data);
+      console.log("🔥 FULL API RESPONSE:", data);
+
       if (data && Array.isArray(data.content)) {
         setCustomers(data.content);
       } else {
@@ -114,7 +117,7 @@ const Customers = () => {
     } catch (error) {
       console.error(
         `Error ${customerEdit ? "updating" : "creating"} customer:`,
-        error
+        error,
       );
     }
 
@@ -134,7 +137,7 @@ const Customers = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -355,8 +358,8 @@ const Customers = () => {
                             customer.customerType === "ORGANIZATION"
                               ? "bg-blue-100 text-blue-800"
                               : customer.customerType === "GROUP"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800 "
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-green-100 text-green-800 "
                           }`}
                         >
                           {customer.customerType || "INDIVIDUAL"}
