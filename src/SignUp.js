@@ -20,16 +20,10 @@ function SignUp() {
   const [organizationId, setOrganizationId] = useState("");
   const [roleIds, setRoleIds] = useState("");
 
-  const backgroundImageStyle = {
-    backgroundImage: "url('/sunset.jpg')",
-  };
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const apiUrl = "/organizations";
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -39,65 +33,57 @@ function SignUp() {
     try {
       const response = await fetch("/api/v1/organizations", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: organizationName,
-          description: description,
+          description,
           email: organizationEmail,
           phone: organizationPhone,
           userRequest: {
-            firstName: firstName,
-            lastName: lastName,
-            middleName: middleName,
+            firstName,
+            lastName,
+            middleName,
             username: userName,
-            email: email,
-            address: address,
-            phone: phone,
-            password: password,
+            email,
+            address,
+            phone,
+            password,
           },
         }),
       });
-      if (response.ok) {
-        toast.success("Account created successfuly! You can now Log in.");
 
+      if (response.ok) {
+        toast.success("Account created successfully! You can now log in.");
         navigate("/");
       } else {
         const errorData = await response.json();
-        console.log("Failed to create user(API response):", errorData);
-
         let errorMessage = "Failed to create account. Please try again.";
-        if (errorData.message) {
-          errorMessage = errorData.message;
-        } else if (errorData.error && Array.isArray(errorData.errors)) {
+        if (errorData.message) errorMessage = errorData.message;
+        else if (errorData.errors) {
           const validationMessages = errorData.errors
             .map((err) => err.message)
-            .join(",");
+            .join(", ");
           errorMessage = `Validation failed: ${validationMessages}`;
-        } else if (response.statusText) {
-          errorMessage = `Failed to create account: ${response.statusText} (Status: ${response.status})`;
         }
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error(`Network error during user creation:`, error);
+      console.error("Network error during user creation:", error);
       toast.error(
-        "Network error: Could not connect to the server. Please check your internet connection and try again."
+        "Network error: Could not connect to the server. Check your internet and try again.",
       );
     }
   };
 
   const inputClassName =
-    "shadow-sm border border-gray-300 rounded-lg w-full py-3 px-4 text-[#333333] leading-tight focus:outline-none focus:ring-2 focus:ring-#FBC531] focus:border-[#FBC531] transition duration-150";
+    "shadow-sm border border-gray-300 rounded-lg w-full py-3 px-4 text-[#333333] leading-tight focus:outline-none focus:ring-2 focus:ring-[#FBC531] focus:border-[#FBC531] transition duration-150";
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-fixed "
-      style={backgroundImageStyle}
+      className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{ backgroundImage: "url('/sunset.jpg')" }}
     >
       <div className="relative min-h-screen flex items-center justify-center p-4 bg-black/50">
-        {/* Sign up card */}
         <div className="bg-white/30 backdrop-blur-sm shadow-2xl rounded-xl p-8 w-full max-w-3xl border-t-8 border-[#192A56]">
           <div className="mb-6 text-right">
             <Link
@@ -132,9 +118,7 @@ function SignUp() {
                     type="text"
                     id="firstName"
                     value={firstName}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                    }}
+                    onChange={(e) => setFirstName(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter First Name"
                     required
@@ -152,9 +136,7 @@ function SignUp() {
                     type="text"
                     id="middleName"
                     value={middleName}
-                    onChange={(e) => {
-                      setMiddleName(e.target.value);
-                    }}
+                    onChange={(e) => setMiddleName(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Middle Name"
                   />
@@ -171,9 +153,7 @@ function SignUp() {
                     type="text"
                     id="lastName"
                     value={lastName}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                    }}
+                    onChange={(e) => setLastName(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Last Name"
                     required
@@ -181,7 +161,7 @@ function SignUp() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label
                     htmlFor="userName"
@@ -193,9 +173,7 @@ function SignUp() {
                     type="text"
                     id="userName"
                     value={userName}
-                    onChange={(e) => {
-                      setUserName(e.target.value);
-                    }}
+                    onChange={(e) => setUserName(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Username"
                     required
@@ -210,12 +188,10 @@ function SignUp() {
                     Email
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     id="email"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
+                    onChange={(e) => setEmail(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Email"
                     required
@@ -233,35 +209,31 @@ function SignUp() {
                     type="tel"
                     id="phone"
                     value={phone}
-                    onChange={(e) => {
-                      setPhone(e.target.value);
-                    }}
+                    onChange={(e) => setPhone(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Phone Number"
                   />
                 </div>
               </div>
 
-              <div className=" md:cols-span-2">
-                <div>
-                  <label
-                    htmlFor="address"
-                    className="block text-white text-sm font-bold mb-2"
-                  >
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    id="address"
-                    value={address}
-                    onChange={(e) => {
-                      setAddress(e.target.value);
-                    }}
-                    className={inputClassName}
-                    placeholder="Enter Address"
-                  />
-                </div>
+              <div>
+                <label
+                  htmlFor="address"
+                  className="block text-white text-sm font-bold mb-2"
+                >
+                  Address
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className={inputClassName}
+                  placeholder="Enter Address"
+                />
+              </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
                   <label
                     htmlFor="password"
@@ -273,9 +245,7 @@ function SignUp() {
                     type="password"
                     id="password"
                     value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
+                    onChange={(e) => setPassword(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Password"
                     required
@@ -293,11 +263,9 @@ function SignUp() {
                     type="password"
                     id="confirmPassword"
                     value={confirmPassword}
-                    onChange={(e) => {
-                      setConfirmPassword(e.target.value);
-                    }}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     className={inputClassName}
-                    placeholder="Cornfirm your password"
+                    placeholder="Confirm your password"
                     required
                   />
                 </div>
@@ -321,9 +289,7 @@ function SignUp() {
                     type="text"
                     id="organizationName"
                     value={organizationName}
-                    onChange={(e) => {
-                      setOrganizationName(e.target.value);
-                    }}
+                    onChange={(e) => setOrganizationName(e.target.value)}
                     className={inputClassName}
                     placeholder="e.g FarmWise Ltd"
                     required
@@ -340,9 +306,7 @@ function SignUp() {
                   <input
                     id="description"
                     value={description}
-                    onChange={(e) => {
-                      setDescription(e.target.value);
-                    }}
+                    onChange={(e) => setDescription(e.target.value)}
                     className={inputClassName}
                     placeholder="Brief description of your farm business"
                   />
@@ -356,11 +320,10 @@ function SignUp() {
                     Organization Email*
                   </label>
                   <input
+                    type="email"
                     id="organizationEmail"
                     value={organizationEmail}
-                    onChange={(e) => {
-                      setOrganizationEmail(e.target.value);
-                    }}
+                    onChange={(e) => setOrganizationEmail(e.target.value)}
                     className={inputClassName}
                     placeholder="Enter Organization Email"
                     required
@@ -381,15 +344,13 @@ function SignUp() {
                     placeholder="Enter Organization Phone"
                     required
                     value={organizationPhone}
-                    onChange={(e) => {
-                      setOrganizationPhone(e.target.value);
-                    }}
+                    onChange={(e) => setOrganizationPhone(e.target.value)}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Organization Link & User Role */}
+            {/* User Role & Organization Link */}
             <div className="p-4 bg-black/10 rounded-lg">
               <h3 className="text-xl font-semibold text-white mb-4 border-b border-gray-200/50 pb-2">
                 User Role & Organization Link
@@ -407,9 +368,7 @@ function SignUp() {
                     id="organizationId"
                     className={inputClassName}
                     value={organizationId}
-                    onChange={(e) => {
-                      setOrganizationId(e.target.value);
-                    }}
+                    onChange={(e) => setOrganizationId(e.target.value)}
                     placeholder="e.g 9007199254740991"
                   />
                 </div>
@@ -426,9 +385,7 @@ function SignUp() {
                     id="roleIds"
                     className={inputClassName}
                     value={roleIds}
-                    onChange={(e) => {
-                      setRoleIds(e.target.value);
-                    }}
+                    onChange={(e) => setRoleIds(e.target.value)}
                     placeholder="e.g 9007199254740991"
                   />
                 </div>
@@ -436,18 +393,17 @@ function SignUp() {
             </div>
 
             {/* Terms And Conditions */}
-            <div className="pt-2 text-sm text-gray-200 text-center ">
+            <div className="pt-2 text-sm text-gray-200 text-center">
               By signing up, you agree to our{" "}
-              <a href="#" className="text-[#FBC531] hover:underline">
+              <Link to="/terms" className="text-[#FBC531] hover:underline">
                 Terms of service
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a href="#" className="text-[#FBC531] hover:underline">
+              <Link to="/privacy" className="text-[#FBC531] hover:underline">
                 Privacy Policy
-              </a>
+              </Link>
             </div>
 
-            {/* Create account button */}
             <button
               type="submit"
               className="mt-4 w-full bg-[#192A56] hover:bg-[#FBC531] text-white hover:text-[#192A56] font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-[#FBC531] shadow-md transition duration-300"
@@ -462,7 +418,7 @@ function SignUp() {
                   Or SignUp With
                 </span>
               </div>
-              <div className="flex justify-around ">
+              <div className="flex justify-around">
                 <button className="text-gray-100 hover:text-[#FBC531]">
                   <FaGoogle className="w-6 h-6 text-red-500" />
                 </button>
@@ -482,4 +438,5 @@ function SignUp() {
     </div>
   );
 }
+
 export default SignUp;

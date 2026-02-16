@@ -14,6 +14,9 @@ const Customers = () => {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const totalPages = 5;
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const API_URL = process.env.REACT_APP_API_URL;
 
   const fetchCustomers = async () => {
     setIsLoading(true);
@@ -21,7 +24,7 @@ const Customers = () => {
     try {
       const token = localStorage.getItem("userToken");
       const response = await fetch(
-        `http://localhost:3000/api/v1/customers/pagination?page=${page}&size=10`,
+        `${API_URL}/api/v1/customers/pagination?page=${page}&size=10`,
         {
           method: "GET",
           headers: {
@@ -36,15 +39,10 @@ const Customers = () => {
         throw new Error(`HTTP error! status:${response.status}`);
       }
 
-      // const data = await response.json();
-      // console.log("API Response:", data);
       const data = await response.json();
-      console.log("🔥 FULL API RESPONSE:", data);
-
       if (data && Array.isArray(data.content)) {
         setCustomers(data.content);
       } else {
-        console.error("Fetched data is not in expected format:", data);
         setCustomers([]);
       }
     } catch (err) {
@@ -57,68 +55,48 @@ const Customers = () => {
 
   useEffect(() => {
     fetchCustomers();
-  }, [page]);
+  }, [page]); // dependency array is correct
 
   const handleNext = () => {
-    if (page < 5) {
-      setPage(page + 1);
-    }
+    if (page < totalPages) setPage(page + 1);
   };
-
   const handlePrevious = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
+    if (page > 1) setPage(page - 1);
   };
-
   const goToPage = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setPage(pageNumber);
-    }
+    if (pageNumber >= 1 && pageNumber <= totalPages) setPage(pageNumber);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const customerPayload = {
+    const payload = {
       name: customerName,
-      email: email,
-      phoneNumber: phoneNumber,
-      customerType: customerType,
+      email,
+      phoneNumber,
+      customerType,
     };
 
-    let url = "";
-    let method = "";
-
-    if (customerEdit) {
-      url = `http://localhost:3000/api/v1/customers/${customerEdit.id}`;
-      method = "PUT";
-    } else {
-      url = "http://localhost:3000/api/v1/customers";
-      method = "POST";
-    }
+    const url = customerEdit
+      ? `${API_URL}/api/v1/customers/${customerEdit.id}`
+      : `${API_URL}/api/v1/customers`;
+    const method = customerEdit ? "PUT" : "POST";
 
     try {
       const token = localStorage.getItem("userToken");
       const response = await fetch(url, {
-        method: method,
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(customerPayload),
+        body: JSON.stringify(payload),
       });
-
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       await fetchCustomers();
-    } catch (error) {
-      console.error(
-        `Error ${customerEdit ? "updating" : "creating"} customer:`,
-        error,
-      );
+    } catch (err) {
+      console.error(err);
     }
 
     setCustomerName("");
@@ -128,37 +106,28 @@ const Customers = () => {
     setCustomerEdit(null);
   };
 
-  const handleDelete = async (idToDelete) => {
+  const handleDelete = async (id) => {
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/v1/customers/${idToDelete}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
+      const token = localStorage.getItem("userToken");
+      const response = await fetch(`${API_URL}/api/v1/customers/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
       await fetchCustomers();
-      console.log(`Customer with ID ${idToDelete} deleted successfully.`);
-    } catch (error) {
-      console.error("Failed to delete customer:", error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
-  const handleEdit = (customerToEdit) => {
-    setCustomerEdit(customerToEdit);
-    setCustomerName(customerToEdit.name);
-    setEmail(customerToEdit.email);
-    setPhoneNumber(customerToEdit.phoneNumber);
-    setCustomerType(customerToEdit.customerType);
+  const handleEdit = (customer) => {
+    setCustomerEdit(customer);
+    setCustomerName(customer.name);
+    setEmail(customer.email);
+    setPhoneNumber(customer.phoneNumber);
+    setCustomerType(customer.customerType);
   };
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <div className="bg-gray-50 min-h-screen space-y-8 p-4 sm:p-6 lg:p-8">
@@ -178,6 +147,7 @@ const Customers = () => {
             Customer Management
           </h2>
         </div>
+
         <div className="mb-6 p-4 bg-white rounded-xl shadow-lg flex items-center border border-gray-200">
           <FaSearch className="w-5 h-5 text-gray-400 mr-3" />
           <label htmlFor="customerSearch" className="sr-only">
@@ -192,13 +162,12 @@ const Customers = () => {
             className="flex-grow border-none focus:ring-0 text-gray-700 placeholder-gray-400 outline-none"
           />
         </div>
-        {/* Customer Form */}
+
         <div className="bg-white rounded-xl shadow-2xl p-8 mb-8 border border-gray-100">
           <form onSubmit={handleSubmit}>
             <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-2">
               {customerEdit ? "Update Customer Details" : "Add New Customer"}
             </h3>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
               <div>
                 <label
@@ -216,7 +185,7 @@ const Customers = () => {
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="block outline-none w-full border border-gray-300 rounded-lg py-2.5 px-3 text-gray-900 placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm shadow-sm transition duration-150"
                 />
-              </div>{" "}
+              </div>
               <div>
                 <label
                   htmlFor="email"
@@ -260,17 +229,15 @@ const Customers = () => {
                 <select
                   id="customerType"
                   value={customerType}
-                  onChange={(e) => {
-                    setCustomerType(e.target.value);
-                  }}
+                  onChange={(e) => setCustomerType(e.target.value)}
                   className="outline-none block w-full border border-gray-300 rounded-lg py-2.5 px-3 text-gray-900 placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm shadow-sm transition duration-150"
                 >
                   <option value="" disabled hidden>
                     Select Customer Type
                   </option>
-                  <option value={"INDIVIDUAL"}>INDIVIDUAL</option>
-                  <option value={"GROUP"}>GROUP</option>
-                  <option value={"ORGANIZATION"}>ORGANIZATION</option>
+                  <option value="INDIVIDUAL">INDIVIDUAL</option>
+                  <option value="GROUP">GROUP</option>
+                  <option value="ORGANIZATION">ORGANIZATION</option>
                 </select>
               </div>
               <div className="col-span-full flex justify-end mt-2">
@@ -284,43 +251,23 @@ const Customers = () => {
             </div>
           </form>
         </div>
-        {/* Table Cards */}
+
+        {/* Table of customers */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    #
-                  </th>
-
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    ID
-                  </th>
-
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Name
-                  </th>
-
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Email
-                  </th>
-
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Customer
-                  </th>
-
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Phone Number
-                  </th>
-
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <th>#</th>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Customer</th>
+                  <th>Phone Number</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody>
                 {isLoading ? (
                   <tr>
                     <td
@@ -336,53 +283,36 @@ const Customers = () => {
                       key={customer.id}
                       className="even:bg-gray-50 hover:bg-indigo-50 transition duration-150"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {index + 1}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
-                        {customer.id}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 ">
-                        {customer.name}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {customer.email}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td>{index + 1}</td>
+                      <td className="font-mono text-gray-500">{customer.id}</td>
+                      <td className="font-medium">{customer.name}</td>
+                      <td>{customer.email}</td>
+                      <td>
                         <span
                           className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             customer.customerType === "ORGANIZATION"
                               ? "bg-blue-100 text-blue-800"
                               : customer.customerType === "GROUP"
                                 ? "bg-yellow-100 text-yellow-800"
-                                : "bg-green-100 text-green-800 "
+                                : "bg-green-100 text-green-800"
                           }`}
                         >
                           {customer.customerType || "INDIVIDUAL"}
                         </span>
                       </td>
-
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        {customer.phoneNumber}
-                      </td>
-
-                      <td className="px-6 py-4 whitespace-none text-sm text-gray-600 flex items-center space-x-3">
+                      <td>{customer.phoneNumber}</td>
+                      <td className="flex items-center space-x-3">
                         <button
                           onClick={() => handleEdit(customer)}
                           title="Edit Customer"
                         >
-                          <FiEdit className="cursor-pointer text-indigo-600 hover:text-indigo-800 h-5 w-5 transition duration-150" />
+                          <FiEdit className="cursor-pointer text-indigo-600 hover:text-indigo-800 h-5 w-5" />
                         </button>
-
                         <button
                           onClick={() => handleDelete(customer.id)}
                           title="Delete Customer"
                         >
-                          <FiTrash2 className="cursor-pointer text-red-600 hover:text-red-800 h-5 w-5 transition duration-150" />
+                          <FiTrash2 className="cursor-pointer text-red-600 hover:text-red-800 h-5 w-5" />
                         </button>
                       </td>
                     </tr>
@@ -398,110 +328,6 @@ const Customers = () => {
             </table>
           </div>
         </div>
-
-        {/* Pagination Controls */}
-        <div className="flex items-center justify-between border-t border-gray-200  bg-white px-4 py-3 sm:px-6 rounded-b-xl shadow-inner">
-          <div className="flex flex-1 items-center justify-between">
-            {/* Left side  */}
-            <div>
-              <p className="text-sm text-gray-700 ">
-                Showing page <span className="font-medium">{page}</span> of{" "}
-                <span className="font-medium">{totalPages}</span>
-              </p>
-            </div>
-
-            {/* Right Side */}
-            <div>
-              <nav
-                className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                aria-label="Pagination"
-              >
-                {/* Previous arrow button */}
-                <button
-                  onClick={handlePrevious}
-                  disabled={page === 1}
-                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 transition"
-                >
-                  <span className="sr-only">Previous</span>
-                  <svg
-                    className="h-5 w-5 "
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.79 5.23a.75.75 0 010 1.06L9.56 10l3.23 3.71a.75.75 0 01-1.06 1.06l-3.75-3.75a.75.75 0 010-1.06l3.75-3.75a.75.75 0 011.06 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-
-                {/* Dynamic page buttons */}
-                {[...Array(totalPages).keys()].map((index) => {
-                  const pageNumber = index + 1;
-                  const isActive = pageNumber === page;
-
-                  return (
-                    <button
-                      key={pageNumber}
-                      onClick={() => goToPage(pageNumber)}
-                      aria-current={isActive ? "page" : undefined}
-                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold
-                    ${
-                      isActive
-                        ? "bg-indigo-600 text-white focus:outline-none focus:z-20"
-                        : "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20"
-                    }
-                    focus:outline-offset-0 transition`}
-                    >
-                      {pageNumber}
-                    </button>
-                  );
-                })}
-
-                {/* Next arrow button */}
-                <button
-                  onClick={handleNext}
-                  disabled={page === totalPages}
-                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 transition"
-                >
-                  <span className="sr-only">Next</span>
-                  <svg
-                    className="h-5 w-5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.21 14.77a.75.75 0 010-1.06L10.44 10 7.21 6.29a.75.75 0 011.06-1.06l3.75 3.75a.75.75 0 010 1.06l-3.75 3.75a.75.75 0 01-1.06 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
-
-        <footer className="py-4 text-center text-gray-500 text-xs mt-8 border-t border-gray-200">
-          <div className="flex justify-between items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {" "}
-            <span>Copyright © Sohclick Technology Ltd</span>
-            <div>
-              <Link to="/" className="mr-4 hover:underline transition">
-                Home
-              </Link>
-              <a href="/privacy" className="mr-4 hover:underline transition">
-                Privacy
-              </a>
-              <a href="/contact" className="hover:underline transition">
-                Contact Us
-              </a>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );
