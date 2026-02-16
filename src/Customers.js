@@ -171,10 +171,10 @@ const Customers = () => {
             >
               Home
             </Link>{" "}
-            <span className="mx-2 text-gray-400">{">"}</span>{" "}
-            <span className="font-semibold text-gray-700">Customers</span>
+            <span className="mx-2 text-gray-500">{">"}</span>{" "}
+            <span className="font-semibold text-gray-800">Customers</span>
           </div>
-          <h2 className="text-2xl font-bold mt-2 mb-4 text-gray-800">
+          <h2 className="text-2xl font-bold mt-2 mb-4 text-gray-900">
             Customer Management
           </h2>
         </div>
